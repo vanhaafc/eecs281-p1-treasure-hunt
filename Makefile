@@ -329,6 +329,8 @@ help:
 # ADD YOUR OWN DEPENDENCIES HERE
 
 # TODO - add dependencies
+Route.o: Route.h Route.cpp
+main.o: Route.cpp
 
 ######################
 # TODO (end) #

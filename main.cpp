@@ -7,13 +7,16 @@
 #include <vector>
 
 #include <getopt.h>
+#include "Route.hpp"
 using namespace std;
 
 //TODO - ????
-std::ios_base::sync_with_stdio(false);
+//std::ios_base::sync_with_stdio(false);
 
 // These modes represent the different ways to process the input data.
 // There are three modes and the state where no mode has been selected.
+
+// TODO: make class function with member variables?? 10 mins into project0 tutorial
 enum class Mode {
     kNone = 0,
     kResize,
@@ -54,8 +57,8 @@ void getOptions(int argc, char **argv, Options &options) {
     // NOLINTBEGIN: getopt predates C++ style, this usage is from `man getopt`
     option longOptions[] = {
     // TODO: Insert two lines for the "mode" ('m') and the "help" ('h') options.
-        {"mode", required_argument, nullptr, 'm' },
-        {"help", no_argument,       nullptr, 'h' }, 
+        {"", required_argument, nullptr, ' ' },
+        {"", no_argument,       nullptr, ' ' }, 
         {nullptr, 0,                nullptr, '\0'},
     };  // longOptions[]
     // NOLINTEND
@@ -187,8 +190,73 @@ double getMedian(vector<double> &data) {
 //TODO: Implement ADT
 class Search{
   public:
+    //TODO - Implement
+    //Pass 2D vector as an argument?
+    Search();
+
+    int getN(){
+      return n;
+    }
+
+    //TODO: Implement
+    void mapInput(char*& m){
+      string line;
+      int row = 0;
+      int col = 0;
+      while(getline(cin, line)){
+        col = 0;
+        for(char c : line){
+          m[row * n + col] = c;
+          col++;
+        }
+        row++;
+      }
+    }
+
+    //TODO: Implement
+    void listInput(char*& m){
+      string line;
+      while(getline(cin, line)){
+        int row = static_cast<int>(line.at(0));
+        int col = static_cast<int>(line.at(2));
+        char t = line.at(4);
+        m[row * n + col] = t;
+      }
+    }
+
+    void readInfo(){
+      string junk;
+      string size;
+
+      getline(cin, junk);
+      getline(cin, junk);
+      getline(cin, inputType);
+      getline(cin, size);
+      n = stoi(size);
+    }
+
+    void readMap(char*& m){
+      if(inputType == "M"){
+        mapInput(m);
+      }
+      else if(inputType == "L"){
+        listInput(m);
+      }
+      //TODO: Maybe change this? Check specs
+      else{
+        cout << "Invalid input!";
+      }
+    }
+
+
 
   private:
+    string inputType;
+    int n;
+    //TODO: is this right or should these go in main?
+    Route captain;
+    Route mate;
+
 };
 
 
@@ -219,6 +287,20 @@ int main(int argc, char *argv[]) {
         cout << "Average: " << getAverage(data) << '\n';
         cout << " Median: " << getMedian(data) << '\n';
     }  // if ..data
+
+
+
+    //TODO: Finish
+    Search s;
+    s.readInfo();
+    int n = s.getN();
+    char* map = new char[n * n];
+    s.readMap(map);
+    
+    
+
+    // Access row 1, col 2
+    // map[1 * n + 2];
 
     return 0;
 }  // main()
