@@ -1,7 +1,6 @@
 // Project Identifier: 40FB54C86566B9DDEAB902CC80E8CE85C1261AAD
 
 #include <algorithm>
-#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -266,7 +265,8 @@ int main(int argc, char *argv[]) {
     ios_base::sync_with_stdio(false);
 
     // Set two digits of precision on output
-    cout << fixed << showpoint << setprecision(2);
+    cout << fixed << showpoint; 
+    cout.precision(2);
 
     // Get the mode from the command line and read in the data
     Options options;
