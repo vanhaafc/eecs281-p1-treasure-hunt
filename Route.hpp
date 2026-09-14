@@ -12,9 +12,16 @@
       // Default Constructor
       Route();
 
+      //TODO: other member funtions
+      void investigate();
+
       //Constructor
     private:
       char valid_terrain;
+      //TODO: variable for hunt order?
+      //TODO: stack/queue?
+      int curr_row;
+      int curr_col;
       
       // Member variables
       
