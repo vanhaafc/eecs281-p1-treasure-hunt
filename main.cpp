@@ -288,6 +288,8 @@ int main(int argc, char *argv[]) {
     Read r;
     r.readInfo();
     int n = r.getN();
+    // TODO: 2D or 1D map?
+    //vector<vector<char>> map;
     vector<char> map(n * n, '.');
     r.readMap(map);
 

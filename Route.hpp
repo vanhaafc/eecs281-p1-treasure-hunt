@@ -20,8 +20,6 @@
 
       void push(Coordinate c);
 
-      void pop();
-
       Coordinate next();
 
       void clear();

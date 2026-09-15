@@ -21,6 +21,17 @@ Search::Search(vector<char> m, int size,bool captain_stack, string captain_order
 
   location.row = curr_row;
   location.col = curr_col;
+
+  treasure = {0, 0};
+  treasure_found = false;
+  water_investigated = 0;
+  land_investigated = 0;
+  went_ashore = 0;
+  verbose = false;
+}
+
+void Search::set_verbose(bool v){
+  verbose = v;
 }
 
 size_t Search::index(int row, int col){
@@ -64,56 +75,102 @@ Discovery Search::discover(int row, int col, char direction, Route &route){
 
   // Check if found treasure
   if(terrain == '$'){
+    treasure = {row, col};
+    treasure_found = true;
     return Discovery::kTreasure;
   }
 
   return Discovery::kAdded;
 }
 
-bool Search::investigate(){
-  char c = map[index(location.row, location.col)];
-  Route &route = (c == '.' || c == '@') ? captain : first_mate;
+bool Search::investigate(Coordinate current, Route &route){
   const string &order = route.get_order();
 
   for(size_t i = 0; i < 4; i++){
     char direction = order.at(i);
 
-    // TODO: use return values
-    Discovery d;
+    // Step one square in this direction. The coordinate is needed after the
+    // call too, so it is computed up front rather than inside each branch.
+    Coordinate next = current;
     if(direction == 'N'){
-      d = discover(location.row - 1, location.col, 'N', route);
+      next.row--;
     }
     else if(direction == 'S'){
-      d = discover(location.row + 1, location.col, 'S', route);
+      next.row++;
     }
     else if(direction == 'E'){
-      d = discover(location.row, location.col + 1, 'E', route);
+      next.col++;
     }
-    else if(direction == 'W'){
-      d = discover(location.row, location.col - 1, 'W', route);
+    else{
+      next.col--;
     }
 
-    // TODO
+    Discovery d = discover(next.row, next.col, direction, route);
+
     if(d == Discovery::kLand){
-      // Increment went-ashore counter (where is that?)
-      // If verbose, print went ashore at: row, col
-      // Call the land hunt loop with that coordinate as the start
-      // If verbose, print search-party result (depending on what step 3 returned)
-      // If treasure was found, stop everything, if not keep looping remaining directions
+      went_ashore++;
+
+      if(verbose){
+        cout << "Went ashore at: " << next.row << "," << next.col << "\n";
+      }
+
+      bool found = land_hunt(next);
+
+      if(verbose){
+        if(found){
+          cout << "Searching island... party found treasure at "
+               << treasure.row << "," << treasure.col << ".\n";
+        }
+        else{
+          cout << "Searching island... party returned with no treasure.\n";
+        }
+      }
+
+      if(found){
+        return true;
+      }
     }
-    // TODO
-    else if (d == Discovery::kTreasure){
-      // TODO: somehow return/have the treasure coordinates
+    else if(d == Discovery::kTreasure){
+      // discover() recorded the coordinates in `treasure`.
+      land_investigated++;
       return true;
     }
   }
+
+  return false;
 } //investigate()
 
-// Does first_mate land hunt
-Discovery land_hunt();
+// Runs one search party from the location where the Captain put it ashore.
+// Returns whether this party found the treasure.
+bool Search::land_hunt(Coordinate start){
+  first_mate.clear();
+
+  if(map[index(start.row, start.col)] == '$'){
+    treasure = start;
+    treasure_found = true;
+    land_investigated++;
+    return true;
+  }
+
+  first_mate.push(start);
+
+  while(!first_mate.empty()){
+    Coordinate current = first_mate.next();
+    land_investigated++;
+
+    if(investigate(current, first_mate)){
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+
 
 // Does backtracking to find most efficient path
-// Use stack to backtrack?
-void backtrack(){
+// Use stack to backtrack? 
+void Search::backtrack(){
 
 }

@@ -36,11 +36,8 @@ Coordinate Route::next(){
   return c;
 }
 
-// TODO: Implement
 void Route::clear(){
-  for(size_t i = 0; i < container.size(); i++){
-    pop();
-  }
+  container.clear();
 }
 
 void Route::set_order(string s){

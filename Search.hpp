@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <stack>
 #include "Route.hpp"
 
 using namespace std;
@@ -23,15 +24,16 @@ class Search{
     Search(vector<char> m, int size,bool captain_stack, string captain_order, 
       bool mate_stack, string mate_order, int curr_row, int curr_col);
 
+    void set_verbose(bool v);
+
     // Decides what to do with one of the neighboring directions
     Discovery discover(int row, int col, char direction, Route &route);
 
-    // Maybe not void return type?
     // Investigates based on hunt order ()
-    bool investigate();
+    bool investigate(Coordinate current, Route &route);
 
-    // Does first_mate land hunt
-    Discovery land_hunt();
+    // Does first_mate land hunt, returns whether the party found treasure
+    bool land_hunt(Coordinate start);
 
     // Does backtracking to find most efficient path
     void backtrack();
@@ -48,6 +50,15 @@ class Search{
     Coordinate location;
     vector<char> map;
     int n;
+
+    // Set once the treasure is discovered, used by verbose and stats output.
+    Coordinate treasure;
+    bool treasure_found;
+
+    int water_investigated;
+    int land_investigated;
+    int went_ashore;
+    bool verbose;
 
 };
 
