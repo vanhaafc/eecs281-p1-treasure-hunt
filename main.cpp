@@ -18,18 +18,18 @@ enum class Container {
 
 // Whether --show-path was requested, and in which format.
 enum class PathMode {
-    kNone = 0,  // option not given: print nothing
-    kMap,       // -p M
-    kList,      // -p L
+    kNone = 0,
+    kMap,
+    kList,
 };  // PathMode{}
 
 
 // Everything the command line can change about a run. The defaults here are
 // the spec's defaults, so an option that is never given just keeps its value.
 struct Options {
-    Container captain = Container::kStack;    // default per spec
-    Container firstMate = Container::kQueue;  // default per spec
-    string huntOrder = "NESW";                // default per spec
+    Container captain = Container::kStack;
+    Container firstMate = Container::kQueue;
+    string huntOrder = "NESW";
     bool verbose = false;
     bool stats = false;
     PathMode showPath = PathMode::kNone;
@@ -52,20 +52,15 @@ void printHelp(char *command) {
 
 
 // Turn "QUEUE"/"STACK" into a Container, or exit(1) with the approved error
-// message. `which` is the option name that goes in that message.
-Container readContainer(const string &arg, const string &which) {
+Container readContainer(const string &arg, const string &error_type) {
     if (arg == "QUEUE") {
         return Container::kQueue;
-    }  // if ..QUEUE
+    }
     if (arg == "STACK") {
         return Container::kStack;
-    }  // if ..STACK
+    }
 
-    // The first line of error output has to be a 'fixed' message for the
-    // autograder to show it to you.
-    cerr << "Invalid argument to --" << which << '\n' << flush;
-    // The second line can provide more information, but you won't see it on the AG.
-    cerr << "  Invalid argument is: " << arg << '\n' << flush;
+    cerr << "Invalid argument to --" << error_type;
     exit(1);
 }  // readContainer()
 
@@ -75,13 +70,13 @@ Container readContainer(const string &arg, const string &which) {
 bool validHuntOrder(const string &arg) {
     if (arg.length() != 4) {
         return false;
-    }  // if ..length
+    }
 
     for (char dir : string("NESW")) {
         if (count(arg.begin(), arg.end(), dir) != 1) {
             return false;
-        }  // if ..count
-    }  // for ..dir
+        } 
+    }
     return true;
 }  // validHuntOrder()
 
@@ -122,16 +117,16 @@ void getOptions(int argc, char **argv, Options &options) {
             options.firstMate = readContainer(string(optarg), "first-mate");
             break;
 
-        case 'o': {  // Need a block here to declare a variable inside a case
+        case 'o': {
             string arg { optarg };
             if (!validHuntOrder(arg)) {
                 cerr << "Invalid argument to --hunt-order\n" << flush;
                 cerr << "  Invalid argument is: " << arg << '\n' << flush;
                 exit(1);
-            }  // if ..valid
+            }
             options.huntOrder = arg;
             break;
-        }  // case 'o'
+        }
 
         case 'v':
             options.verbose = true;
@@ -145,7 +140,7 @@ void getOptions(int argc, char **argv, Options &options) {
             if (options.showPath != PathMode::kNone) {
                 cerr << "Specify --show-path only once\n" << flush;
                 exit(1);
-            }  // if ..already specified
+            }
 
             string arg { optarg };
             if (arg == "M") {
@@ -156,48 +151,51 @@ void getOptions(int argc, char **argv, Options &options) {
                 cerr << "Invalid argument to --show-path\n" << flush;
                 cerr << "  Invalid argument is: " << arg << '\n' << flush;
                 exit(1);
-            }  // if ..arg
+            }
             break;
-        }  // case 'p'
+        }
 
         default:
             cerr << "Unknown option\n" << flush;
             exit(1);
 
-        }  // switch ..choice
-    }  // while
+        }
+    }
 }  // getOptions()
 
-// ADT (TODO: needs to relate with getOpt?)
-class Search{
+// ADT
+class Read{
   public:
-    //TODO - Implement
-    //Pass 2D vector as an argument?
-    Search();
+    Read();
 
     int getN(){
       return n;
     }
 
-    void mapInput(vector<vector<char>> &m){
+    void mapInput(vector<char> &m){
       string line;
       int row = 0;
       int col = 0;
       while(getline(cin, line)){
         col = 0;
         for(char c : line){
+          if(c != '.' || c != '@' || c != 'o' || c != 'o' || c != '#'){
+            cout << "Invalid terrain type";
+            exit(1);
+          }
+
           if(c == '@'){
             start_row = row;
             start_col = col;
           }
-          m[row][col] = c;
+          m[row * n + col] = c;
           col++;
         }
         row++;
       }
     }
 
-    void listInput(vector<vector<char>> &m){
+    void listInput(vector<char> &m){
 
       string line;
       while(getline(cin, line)){
@@ -215,7 +213,7 @@ class Search{
           start_col = col;
         }
         
-        m[row][col] = t;
+        m[row *n + col] = t;
       }
     }
 
@@ -226,13 +224,13 @@ class Search{
       while (cin.peek() == '#') { 
         getline(cin, junk); 
       }
-      
+
       getline(cin, inputType);
       getline(cin, size);
       n = stoi(size);
     }
 
-    void readMap(vector<vector<char>> &m){
+    void readMap(vector<char> &m){
       if(inputType == "M"){
         mapInput(m);
       }
@@ -240,10 +238,22 @@ class Search{
         listInput(m);
       }
       else{
-        cout << "Unkown option";
+        cout << "Unknown option";
       }
 
-      // TODO: check if no treasure or start location
+      // Check if no treasure
+      vector<char>::iterator it1 = find(m.begin(), m.end(), '$');
+      if(it1 == m.end()){
+        cout << "Map does not have treasure";
+        exit(1);
+      }
+
+      // Check if no start location 
+      vector<char>::iterator it2 = find(m.begin(), m.end(), '@');
+      if(it2 == m.end()){
+        cout << "Map does not have a start location";
+        exit(1);
+      }
     }
 
     int getStartRow(){
@@ -258,7 +268,6 @@ class Search{
   private:
     string inputType;
     int n;
-    //TODO: is this right or should these go in main?
     int start_row;
     int start_col;
 
@@ -274,11 +283,18 @@ int main(int argc, char *argv[]) {
     getOptions(argc, argv, options);
 
     //TODO: Finish
-    Search s;
-    s.readInfo();
-    int n = s.getN();
-    vector<vector<char>> map(n, vector<char>(n, '.'));
-    s.readMap(map);
+    Read r;
+    r.readInfo();
+    int n = r.getN();
+    vector<char> map(n * n, '.');
+    r.readMap(map);
+
+
+    //TODO use container in options
+    //Route captain;
+    //Route first_mate;
+
+
 
     return 0;
 }  // main()

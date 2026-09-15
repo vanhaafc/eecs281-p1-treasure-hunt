@@ -2,28 +2,41 @@
 #define ROUTE_HPP
 
  #include <iostream>
- #include <stack>
- #include <queue>
+ #include <string>
+ #include <deque>
 
  using namespace std;
 
+ struct Coordinate {
+  int row;
+  int col;
+ };
+
  class Route {
     public:
-      // Default Constructor
       Route();
 
-      //TODO: other member funtions
-      void investigate();
+      bool empty();
 
-      //Constructor
+      void push(Coordinate c);
+
+      void pop();
+
+      Coordinate next();
+
+      void clear();
+
+      void set_order(string s);
+
+      void set_valid_terrain(char c);
+
+      void set_container_type(bool a);
+
     private:
+      deque<Coordinate> discovered;
+      string hunt_order;
       char valid_terrain;
-      //TODO: variable for hunt order?
-      //TODO: stack/queue?
-      int curr_row;
-      int curr_col;
-      
-      // Member variables
+      bool stack;
       
  };
 
