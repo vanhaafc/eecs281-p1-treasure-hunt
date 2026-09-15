@@ -7,35 +7,30 @@ using namespace std;
 
 Route::Route(){
   hunt_order = "NESW";
-  valid_terrain = '.';
+  on_land = false;
   stack = true;
 }
 
 bool Route::empty(){
-  if(discovered.empty()){
+  if(container.empty()){
     return true;
   }
   return false;
 }
 
 void Route::push(Coordinate c){
-  if(stack){
-    discovered.push_front(c);
-  }
-  else{
-    discovered.push_back(c);
-  }
+  container.push_front(c);
 }
 
 Coordinate Route::next(){
   Coordinate c;
   if(stack){
-    c = discovered.front();
-    discovered.pop_front();
+    c = container.front();
+    container.pop_front();
   }
   else{
-    c = discovered.back();
-    discovered.pop_back();
+    c = container.back();
+    container.pop_back();
   }
 
   return c;
@@ -43,7 +38,7 @@ Coordinate Route::next(){
 
 // TODO: Implement
 void Route::clear(){
-  for(size_t i = 0; i < discovered.size(); i++){
+  for(size_t i = 0; i < container.size(); i++){
     pop();
   }
 }
@@ -52,8 +47,16 @@ void Route::set_order(string s){
   hunt_order = s;
 }
 
-void Route::set_valid_terrain(char c){
-  valid_terrain = c;
+const string &Route::get_order(){
+  return hunt_order;
+}
+
+void Route::set_on_land(bool l){
+  on_land = l;
+}
+
+bool Route::is_on_land(){
+  return on_land;
 }
 
 void Route::set_container_type(bool a){

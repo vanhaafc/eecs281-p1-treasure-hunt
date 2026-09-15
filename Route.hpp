@@ -28,14 +28,18 @@
 
       void set_order(string s);
 
-      void set_valid_terrain(char c);
+      const string &get_order();
+
+      void set_on_land(bool l);
+
+      bool is_on_land();
 
       void set_container_type(bool a);
 
     private:
-      deque<Coordinate> discovered;
+      deque<Coordinate> container;
       string hunt_order;
-      char valid_terrain;
+      bool on_land;
       bool stack;
       
  };

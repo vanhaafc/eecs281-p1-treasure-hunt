@@ -166,7 +166,9 @@ void getOptions(int argc, char **argv, Options &options) {
 // ADT
 class Read{
   public:
-    Read();
+    Read(){
+      
+    }
 
     int getN(){
       return n;
