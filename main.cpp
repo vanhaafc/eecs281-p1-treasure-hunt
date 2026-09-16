@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <getopt.h>
+#include "Search.hpp"
 #include "Route.hpp"
 using namespace std;
 
@@ -60,7 +61,8 @@ Container readContainer(const string &arg, const string &error_type) {
         return Container::kStack;
     }
 
-    cerr << "Invalid argument to --" << error_type;
+    cerr << "Invalid argument to --" << error_type << '\n';
+    cerr << "  Invalid argument is: " << arg << '\n';
     exit(1);
 }  // readContainer()
 
@@ -120,8 +122,8 @@ void getOptions(int argc, char **argv, Options &options) {
         case 'o': {
             string arg { optarg };
             if (!validHuntOrder(arg)) {
-                cerr << "Invalid argument to --hunt-order\n" << flush;
-                cerr << "  Invalid argument is: " << arg << '\n' << flush;
+                cerr << "Invalid argument to --hunt-order\n";
+                cerr << "  Invalid argument is: " << arg << '\n';
                 exit(1);
             }
             options.huntOrder = arg;
@@ -138,7 +140,7 @@ void getOptions(int argc, char **argv, Options &options) {
 
         case 'p': {
             if (options.showPath != PathMode::kNone) {
-                cerr << "Specify --show-path only once\n" << flush;
+                cerr << "Specify --show-path only once\n";
                 exit(1);
             }
 
@@ -148,15 +150,15 @@ void getOptions(int argc, char **argv, Options &options) {
             } else if (arg == "L") {
                 options.showPath = PathMode::kList;
             } else {
-                cerr << "Invalid argument to --show-path\n" << flush;
-                cerr << "  Invalid argument is: " << arg << '\n' << flush;
+                cerr << "Invalid argument to --show-path\n";
+                cerr << "  Invalid argument is: " << arg << '\n';
                 exit(1);
             }
             break;
         }
 
         default:
-            cerr << "Unknown option\n" << flush;
+            cerr << "Unknown option\n";
             exit(1);
 
         }
@@ -181,8 +183,8 @@ class Read{
       while(getline(cin, line)){
         col = 0;
         for(char c : line){
-          if(c != '.' || c != '@' || c != 'o' || c != 'o' || c != '#'){
-            cout << "Invalid terrain type";
+          if(c != '.' && c != '@' && c != 'o' && c != '$' && c != '#'){
+            cerr << "Invalid terrain type\n";
             exit(1);
           }
 
@@ -190,7 +192,7 @@ class Read{
             start_row = row;
             start_col = col;
           }
-          m[row * n + col] = c;
+          m[static_cast<size_t>(row * n + col)] = c;
           col++;
         }
         row++;
@@ -198,15 +200,20 @@ class Read{
     }
 
     void listInput(vector<char> &m){
+      int row = 0;
+      int col = 0;
+      char t = '\0';
 
-      string line;
-      while(getline(cin, line)){
-        int row = static_cast<int>(line.at(0));
-        int col = static_cast<int>(line.at(2));
-        char t = line.at(4);
-
+      // Extraction skips whitespace and blank lines by itself, and copes with
+      // coordinates of more than one digit.
+      while(cin >> row >> col >> t){
         if(row >= n || row < 0 || col >= n || col < 0){
-          cout << "Invalid coordinates in list mode input";
+          cerr << "Invalid coordinates in list mode input\n";
+          exit(1);
+        }
+
+        if(t != '.' && t != '@' && t != 'o' && t != '$' && t != '#'){
+          cerr << "Invalid terrain type\n";
           exit(1);
         }
 
@@ -214,8 +221,8 @@ class Read{
           start_row = row;
           start_col = col;
         }
-        
-        m[row *n + col] = t;
+
+        m[static_cast<size_t>(row * n + col)] = t;
       }
     }
 
@@ -240,20 +247,21 @@ class Read{
         listInput(m);
       }
       else{
-        cout << "Unknown option";
+        cerr << "Invalid input file type\n";
+        exit(1);
       }
 
       // Check if no treasure
       vector<char>::iterator it1 = find(m.begin(), m.end(), '$');
       if(it1 == m.end()){
-        cout << "Map does not have treasure";
+        cerr << "Map does not have treasure\n";
         exit(1);
       }
 
       // Check if no start location 
       vector<char>::iterator it2 = find(m.begin(), m.end(), '@');
       if(it2 == m.end()){
-        cout << "Map does not have a start location";
+        cerr << "Map does not have a start location\n";
         exit(1);
       }
     }
@@ -284,21 +292,41 @@ int main(int argc, char *argv[]) {
     Options options;
     getOptions(argc, argv, options);
 
-    //TODO: Finish
     Read r;
     r.readInfo();
     int n = r.getN();
+
     // TODO: 2D or 1D map?
     //vector<vector<char>> map;
-    vector<char> map(n * n, '.');
+    vector<char> map(static_cast<size_t>(n * n), '.');
     r.readMap(map);
 
+    int start_row = r.getStartRow();
+    int start_col = r.getStartColumn();
 
-    //TODO use container in options
-    //Route captain;
-    //Route first_mate;
+    // One --hunt-order applies to both hunters.
+    Search s(map, n,
+             options.captain == Container::kStack, options.huntOrder,
+             options.firstMate == Container::kStack, options.huntOrder,
+             start_row, start_col);
 
+    s.set_verbose(options.verbose);
+    s.set_stats(options.stats);
 
+    s.water_hunt();
+
+    // Verbose output already printed during the hunt. Remaining order is
+    // stats, then path, then the results line.
+    s.print_stats();
+
+    if(options.showPath == PathMode::kMap){
+        s.print_path_map();
+    }
+    else if(options.showPath == PathMode::kList){
+        s.print_path_list();
+    }
+
+    s.print_results();
 
     return 0;
 }  // main()

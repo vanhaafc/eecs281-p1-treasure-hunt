@@ -1,3 +1,4 @@
+// Project Identifier: 40FB54C86566B9DDEAB902CC80E8CE85C1261AAD
 #include <iostream>
 #include <stack>
 #include <deque>

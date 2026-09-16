@@ -31,7 +31,7 @@ UNIQNAME    = vanhaafc
 IDENTIFIER  = 40FB54C86566B9DDEAB902CC80E8CE85C1261AAD
 
 # Change 'executable' to match the command name given in the project spec.
-EXECUTABLE  = project1
+EXECUTABLE  = hunt
 
 # The following line looks for a project's main() in files named project*.cpp,
 # executable.cpp (substituted from EXECUTABLE above), or main.cpp
@@ -70,6 +70,9 @@ OBJECTS     = $(SOURCES:%.cpp=%.o)
 
 # Default Flags
 CXXFLAGS = -std=c++17 -Wconversion -Wall -Werror -Wextra -pedantic
+
+# `make -R -r` with no target must build the release executable.
+.DEFAULT_GOAL := release
 
 # make debug - will compile sources with $(CXXFLAGS) -g3 and -fsanitize
 #              flags also defines DEBUG and _GLIBCXX_DEBUG
@@ -328,9 +331,10 @@ help:
 #
 # ADD YOUR OWN DEPENDENCIES HERE
 
-# TODO - add dependencies
-Route.o: Route.h Route.cpp
-main.o: Route.cpp
+# Dependencies (from: g++ -std=c++17 -MM *.cpp)
+Route.o: Route.cpp Route.hpp
+Search.o: Search.cpp Search.hpp Route.hpp
+main.o: main.cpp Route.hpp
 
 ######################
 # TODO (end) #
