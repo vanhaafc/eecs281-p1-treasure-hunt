@@ -1,0 +1,8 @@
+# Captain queue and first mate stack
+# Treasure right next to the start
+M
+4
+$@..
+#...
+....
+ooo.

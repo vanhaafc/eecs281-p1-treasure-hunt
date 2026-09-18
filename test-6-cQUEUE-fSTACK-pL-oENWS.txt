@@ -1,0 +1,7 @@
+# Show path - list
+M
+4
+$...
+oooo
+..@.
+....

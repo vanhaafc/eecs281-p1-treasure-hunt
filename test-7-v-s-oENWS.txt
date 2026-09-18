@@ -1,0 +1,8 @@
+# No stack or queue options
+# Different hunt order
+M
+4
+$...
+oooo
+..@.
+....
