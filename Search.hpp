@@ -23,7 +23,7 @@ enum class Discovery {
 // Class that does the searching mechanism
 class Search{
   public:
-    Search(vector<char> m, int size, bool captain_stack, string captain_order, 
+    Search(vector<char> &m, int size, bool captain_stack, string captain_order, 
       bool mate_stack, string mate_order, int curr_row, int curr_col);
 
     void set_verbose(bool v);

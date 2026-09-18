@@ -1,0 +1,7 @@
+# Non-accessible treasure
+M
+4
+$#..
+##oo
+....
+@...

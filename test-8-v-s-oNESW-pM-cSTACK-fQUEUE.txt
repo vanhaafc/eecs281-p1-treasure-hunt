@@ -1,0 +1,7 @@
+# try every option (verbose, stats, show path)
+M
+4
+$...
+oooo
+..@.
+....

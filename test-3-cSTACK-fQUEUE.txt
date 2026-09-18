@@ -1,0 +1,8 @@
+# No start location
+M
+5
+..oo.
+.o$o.
+.....
+..@..
+.....

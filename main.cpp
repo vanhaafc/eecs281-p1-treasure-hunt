@@ -296,8 +296,6 @@ int main(int argc, char *argv[]) {
     r.readInfo();
     int n = r.getN();
 
-    // TODO: 2D or 1D map?
-    //vector<vector<char>> map;
     vector<char> map(static_cast<size_t>(n * n), '.');
     r.readMap(map);
 

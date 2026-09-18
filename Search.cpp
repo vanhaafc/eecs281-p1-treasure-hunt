@@ -7,8 +7,9 @@
 
 using namespace std;
 
-Search::Search(vector<char> m, int size,bool captain_stack, string captain_order, 
+Search::Search(vector<char> &m, int size, bool captain_stack, string captain_order, 
       bool mate_stack, string mate_order, int curr_row, int curr_col){
+  // TODO: pass map by reference?
   map = m;
   n = size;
   came_from.assign(static_cast<size_t>(n) * static_cast<size_t>(n), '\0');
