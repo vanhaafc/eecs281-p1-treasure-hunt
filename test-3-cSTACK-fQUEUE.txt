@@ -1,8 +1,9 @@
-# No start location
+# Multiple land searches
 M
-5
-..oo.
-.o$o.
-.....
-..@..
-.....
+6
+@...oo
+.ooooo
+......
+....oo
+.....o
+...o$o

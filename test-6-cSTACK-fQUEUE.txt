@@ -1,7 +1,0 @@
-# Invalid terrain type
-M
-4
-$...
-oooo
-..@.
-.k..

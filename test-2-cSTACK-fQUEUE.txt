@@ -1,6 +1,4 @@
-# No treasure
+# N < 2
 M
-3
-...
-oo.
-o.@
+1
+@
